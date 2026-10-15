@@ -61,7 +61,7 @@ Each segment keeps its own audio at its own offset - never another take's sound 
 """
 import sys, os, subprocess, re, math, shutil, json
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
-from lib import cli, fonts, landing, production  # noqa: E402
+from lib import cli, fonts, landing, production, wip  # noqa: E402
 AUDIO_ONLY = False
 PRORES = False     # --prores: build() encodes its picture as ProRes 422 HQ (one segment at a time, from build_prores)
 ROUND = 'r3'      # --round; default: the highest r<N> in the media root
@@ -269,7 +269,8 @@ def build(edl, out, labels, cut_id):
         return segs, t
     subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', *ins, '-filter_complex', ';'.join(fc), '-map', '[v]', '-map', '[a]',
                     '-c:v', 'libx264', '-crf', '23' if labels else '17', *(['-preset', 'veryfast'] if labels else []), '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '192k',
-                    '-metadata', f'title={cut_id}', out + '.part.mp4'], check=True)
+                    # the labelled copy is the review copy: titled by its file name (lib/wip.py)
+                    '-metadata', f'title={wip.title(out) if labels else cut_id}', out + '.part.mp4'], check=True)
     os.replace(out + '.part.mp4', out)  # a killed build never leaves a half-written cut under the real name
     return segs, t
 

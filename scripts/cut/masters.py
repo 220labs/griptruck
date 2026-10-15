@@ -29,7 +29,7 @@ HERE = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.dirname(HERE))
 import promo  # noqa: E402
-from lib import cli, landing, production  # noqa: E402
+from lib import cli, landing, production, wip  # noqa: E402
 
 
 def frames(p):
@@ -42,11 +42,12 @@ def adur(p):
                                  '-of', 'csv=p=0', p], capture_output=True, text=True).stdout)
 
 
-def mux(pic, mix, out, vf=None):
+def mux(pic, mix, out, vf=None, title=None):
     v = ['-c:v', 'copy'] if not vf else ['-vf', vf, '-c:v', 'libx264', '-crf', '17', '-preset', 'medium', '-pix_fmt', 'yuv420p']
     subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', pic, '-i', mix, '-map', '0:v:0', '-map', '1:a:0', *v,
                     '-c:a', 'aac', '-b:a', '192k', '-ar', '48000', '-movflags', '+faststart',
-                    '-metadata:s:a:0', 'language=rus', out + '.part.mp4'], check=True)
+                    '-metadata:s:a:0', 'language=rus', *(['-metadata', f'title={title}'] if title else []),
+                    out + '.part.mp4'], check=True)
     os.replace(out + '.part.mp4', out)
     n, want = frames(out), frames(pic)
     d = adur(out)
@@ -113,7 +114,8 @@ def main(argv):
     if a.review and 'review' in only:
         os.makedirs(f'{cd}/review', exist_ok=True)
         pre = p.label_prefix
-        mux(os.path.join(a.review, f'{pre}-{cut}.mp4'), mix, f'{cd}/review/{pre}-{m}.mp4')
+        rv = f'{cd}/review/{pre}-{m}.mp4'   # titled by its own name, not the cut's it was muxed from (lib/wip.py)
+        mux(os.path.join(a.review, f'{pre}-{cut}.mp4'), mix, rv, title=wip.title(rv))
         idx = open(os.path.join(a.review, f'{pre}-{cut}-index.md'), encoding='utf-8').read()
         head, _, rest = idx.partition('\n')
         open(f'{cd}/review/{pre}-{m}-index.md', 'w', encoding='utf-8').write(
