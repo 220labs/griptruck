@@ -4,18 +4,18 @@
 # venv, and /usr/bin/python3 is what both Macs have. Unpinned on purpose: pip picks the newest
 # release that still supports that python (3.9 today); the script prints what it got.
 # Found by grepping the tools' imports on 2026-09-24; re-grep when a tool gains an import.
-pillow        # PIL: label (stills), poster, presskit, a production's reader
-numpy         # mix, beds, toys, spotting, music, a production's reader
-scipy         # mix, music
+pillow        # PIL: label (stills), poster, presskit, a production's reader, docu cut (machine cards, roll), upscale sheet
+numpy         # mix, beds, toys, spotting, music, a production's reader, docu verify_4k, upscale reel
+scipy         # mix, music, docu upscale reel
 soundfile     # mix, beds, toys, sep_chunks
 pyloudnorm    # mix, promo: LUFS
 librosa       # music: gridcheck, lagscan
 mido          # music: notelist, the score as MIDI
 qrcode        # cut/qr: the end-card QR
 fonttools     # a production's reader: font subsetting
-pyyaml        # production.yaml, LOCKS.yaml
+pyyaml        # production.yaml, LOCKS.yaml, every docu tool (cut lists, release/*.yaml)
 playwright    # presskit: HTML to PDF (then: python3 -m playwright install chromium)
-google-api-python-client  # youtube: the Data API v3 client (uploads, updates, captions, playlists)
-google-auth               # youtube: the refresh-token credentials
+google-api-python-client  # youtube: the Data API v3 client (uploads, updates, captions, playlists); docu drive_fetch
+google-auth               # youtube: the refresh-token credentials; docu drive_fetch: the service account
 google-auth-oauthlib      # youtube auth only, on a laptop: the one-time consent flow
 opencv-python # blur: YuNet face detection (its model is fetched by install_tools.sh)
