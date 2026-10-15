@@ -9,7 +9,7 @@ so every review copy reads <label_prefix>-<id>:
   Stills -> OUTDIR/<label_prefix>-<id>.jpg : image untouched, a strip added below with the ID
             (four stills of one shot also make OUTDIR/<label_prefix>-<shot>-sheet.jpg)
   Videos (.mp4 .mov .m4v .mkv .webm) -> OUTDIR/<label_prefix>-<id>.mp4 : ID in the top-left corner for the whole clip,
-            audio copied, container title set to the ID.
+            audio copied, container title set to the file name (Plex shows it).
 Paths: map.tsv relative to the text root; sources and OUTDIR relative to the media root.
 Review copies of clips go to production.yaml's `wip` (/wip takes clips and cuts
 only); stills are reviewed in Flow.
@@ -22,7 +22,7 @@ import subprocess
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
-from lib import cli, fonts, production  # noqa: E402
+from lib import cli, fonts, production, wip  # noqa: E402
 
 
 def pil():
@@ -56,7 +56,7 @@ def video(src, tid, out):
           "fontcolor=white:box=1:boxcolor=black@0.6:boxborderw=6")
     subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', src, '-vf', vf,
                     '-c:v', 'libx264', '-crf', '16', '-preset', 'slow', '-pix_fmt', 'yuv420p',
-                    '-c:a', 'copy', '-metadata', f'title={tid}', '-movflags', '+faststart', out], check=True)
+                    '-c:a', 'copy', '-metadata', f'title={wip.title(out)}', '-movflags', '+faststart', out], check=True)
 
 
 def sheet(srcs, ids, out):

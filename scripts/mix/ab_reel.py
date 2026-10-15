@@ -29,7 +29,7 @@ from scipy.signal import fftconvolve
 
 HERE = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
-from lib import cli, fonts, landing, production  # noqa: E402
+from lib import cli, fonts, landing, production, wip  # noqa: E402
 
 SR, GAP = 48000, 10
 
@@ -120,8 +120,7 @@ def main(argv):
     if a.wip:
         os.makedirs(a.wip, exist_ok=True)
         dst = os.path.join(a.wip, f'{p.label_prefix}-{os.path.basename(out)}')
-        shutil.copyfile(out, dst + '.part')
-        os.replace(dst + '.part', dst)
+        wip.copy(out, dst)   # titled by its file name
         print('review copy', dst)
     if a.no_land:
         print('NOT LANDED (--no-land): in the Mac shell, run: bin/tool land ' + out)

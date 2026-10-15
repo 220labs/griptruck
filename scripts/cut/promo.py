@@ -55,7 +55,7 @@ HERE = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.dirname(HERE))
 import edl_cut  # noqa: E402
-from lib import cli, fonts, landing, production  # noqa: E402
+from lib import cli, fonts, landing, production, wip  # noqa: E402
 
 FPS, SR = 24, 48000
 MIX = SCORE = None          # the finished mix and its score stem, set from the config in main()
@@ -423,9 +423,7 @@ def main(argv):
         made.append(out)
         if a.wip:
             os.makedirs(a.wip, exist_ok=True)
-            dst = os.path.join(a.wip, f'{p.label_prefix}-{pid}-{lg}.mp4')   # via .part: a killed copy never sits under the real name
-            shutil.copyfile(out, dst + '.part')
-            os.replace(dst + '.part', dst)
+            wip.copy(out, os.path.join(a.wip, f'{p.label_prefix}-{pid}-{lg}.mp4'))   # titled by its file name
     if a.wip:
         for lg in langs:
             for sl in ('en', 'ru'):   # Plex pairs <video>.<lang>.srt with the video
